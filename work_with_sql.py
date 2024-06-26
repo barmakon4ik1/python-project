@@ -1,9 +1,10 @@
 import configparser
 from mysql.connector import MySQLConnection, Error
-from prettytable import from_db_cursor, PrettyTable
+from prettytable import from_db_cursor
 import titel_screen
 from colorama import init
 from colorama import Fore
+import logic
 
 
 init(autoreset=True)
@@ -232,6 +233,7 @@ def choice_select():
 |  Понимаю, ни то ни другое не подходит. По названию?      - 3  |
 |  Совсем тяжело с выбором - будем искать по описанию.     - 4  |
 |  А если скомбинируем? По категории и году?               - 5  |
+|  Экспериментальная графическая оболочка                  - 6  |
 |  Хочешь выйти?                                           - 0  |
 +---------------------------------------------------------------+\n""")
     flag = True
@@ -239,8 +241,8 @@ def choice_select():
         while flag:
             print(query_color + "\nНу, выбирай! Смелее! Итак, твой выбор: ")
             choice = int(input())
-            if choice not in range(0, 6):
-                print(info_color + "\nВыбрать можно только числа от 0 до 5, повтори выбор\n")
+            if choice not in range(0, 7):
+                print(info_color + "\nВыбрать можно только числа от 0 до 6, повтори выбор\n")
                 break
             elif choice == 0:
                 parting()
@@ -255,6 +257,8 @@ def choice_select():
 ищем по части слова в названии или описании\n""")
             elif choice == 5:
                 print(info_color + "\nДавай пустим в ход тяжелую артиллерию? \n")
+            elif choice == 6:
+                logic.find_with_window()
             else:
                 parting()
             return choice
@@ -282,13 +286,6 @@ def into_statistics(value):
         query = "INSERT INTO statistics (user_request) VALUES(%s);"
         args = value
         cursor.execute(query, args)
-
-        # Строки для проверки добавления индекса в БД запросов:
-        # if cursor.lastrowid:
-        #     print('Последний добавленный индекс id ', cursor.lastrowid)
-        # else:
-        #     print('Последний добавленный индекс id не найден')
-
         conn.commit()
 
     except Error as err:
